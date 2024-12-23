@@ -392,7 +392,7 @@ function displayFoundResult(found: ReadonlyMap<string, CellSequence[]>) {
         return;
     }
 
-    words.sort();
+    words.sort((word1, word2) => word1.localeCompare(word2));
 
     const wordIndent = '\t';
     const sequenceIndent = wordIndent + '\t';
