@@ -385,17 +385,21 @@ function displayFoundResult(found: ReadonlyMap<string, CellSequence[]>) {
         return;
     }
 
-    console.log(`Found ${found.size} word(s): ${[...found.keys()].join(', ')}`);
+    const words = [...found.keys()];
+    console.log(`Found ${words.length} word(s): ${words.join(', ')}`);
 
     if (!VERBOSE) {
         return;
     }
+
+    words.sort();
+
     const wordIndent = '\t';
     const sequenceIndent = wordIndent + '\t';
-
     const sequenceLimit = 5;
     const messages: string[] = [];
-    for (const [word, sequences] of found) {
+    for (const word of words) {
+        const sequences = found.get(word)!;
         const wordMsg = `${wordIndent}- ${word}:`;
         if (sequences.length === 1) {
             const sequenceMsg = createSequenceMessage(sequences[0]);
@@ -506,7 +510,7 @@ function showWordsInChunk(words: Iterable<string>, chunkSize: number = 10) {
                         )
                         .join('\n');
 
-    console.log(`\n${chunksMsg}\n`);
+    console.log(`${chunksMsg}\n`);
 }
 
 type TestCase = {board: TextBoard, words: ReadonlySet<string>};
@@ -1235,6 +1239,45 @@ M Q R R P E U L W O Z Y E Y C A R U D E G T F T P J N E W B T Q R M W C K B T D 
                 ]
             };
             break;
+        case 5:
+            result = {
+                board: `
+                    E P B E N L C A C M F P E R D D R D M W
+                    R A D U B A B R I R A N C F I E R A A U
+                    P O S U S A O M O M I G N U E C P A G Y
+                    N M O T N W L T R G L E R A S D H A M E
+                    G Y U D N F H A N I A U G E N T E I R A
+                    Y R O J Z E O E N R F G F U E M O R E T
+                    B N E B A W G L S C R F O E T M X M A F
+                    E A A A E R O A D A E H A C T U E E N L
+                    A C L P T L L L V S F G E D R A L N K C
+                    R S A E M P L A G O N F N C T A R O T K
+                    D A H R L O T Q O I F E H A P S O G S S
+                    E E E A D E C T D E T I L T H R F A D T
+                    L S N L C L Y R A T S E R A P D A I C B
+                    E T A L C O O L A T M O P E I E S V L E
+                    B X G E A F M G P A T E N L N T D A E M
+                    H R H L F R H E R M F R I G U I T S N N
+                    G D O A O O G F D A O G A R A H A M E D
+                    A R A K U O E E S Y E C B C O I O H G A
+                    Z D I R E S M T G N A S I R T O D A C W
+                    B F D D T N T Y T G H D N V N L Y L H H
+                `,
+                words: [
+                    'ABANDON'   , 'ACE'       , 'ACID'      , 'ADD'       , 'AFFIRM'    , 'AFFORDING' , 'AGENTS'    , 'AGGRAVATE' ,
+                    'AGREE'     , 'AGREEMENTS', 'AIM'       , 'ARM'       , 'ART'       , 'ASH'       , 'ATTEND'    , 'ATTRACT'   ,
+                    'BALANCE'   , 'BELL'      , 'BROKEN'    , 'BUS'       , 'CAR'       , 'CAST'      , 'CHAIN'     , 'CHIEF'     ,
+                    'CLEAR'     , 'COMEDY'    , 'COMPANY'   , 'COMPLY'    , 'CROWN'     , 'CRUX'      , 'CUSTOM'    , 'DART'      ,
+                    'DAY'       , 'DEPART'    , 'DEPTH'     , 'DIAGNOSE'  , 'DILIGENT'  , 'DISTURB'   , 'DOOR'      , 'DRAMA'     ,
+                    'EASE'      , 'EAST'      , 'EFFECT'    , 'EGG'       , 'ENGINE'    , 'ENLARGE'   , 'EXHAUST'   , 'FAST'      ,
+                    'FEDERAL'   , 'FILM'      , 'FIRE'      , 'FOE'       , 'FOOT'      , 'FRAME'     , 'FROTH'     , 'GAY'       ,
+                    'GLOOMY'    , 'GLOW'      , 'GOLD'      , 'GRATEFUL'  , 'GREAT'     , 'GRID'      , 'HOUND'     , 'JARL'      ,
+                    'JUMP'      , 'LAB'       , 'LENS'      , 'LOST'      , 'MAP'       , 'MOON'      , 'NEARS'     , 'NODE'      ,
+                    'PALE'      , 'PLANT'     , 'RACE'      , 'RAGE'      , 'RAVEN'     , 'RICH'      , 'ROOK'      , 'SAND'      ,
+                    'SEA'       , 'SEAR'      , 'SHAPE'     , 'SUN'       , 'TALE'      , 'THORN'     , 'UNFOLD'    ,
+                ]
+            }
+            break;
         default:
             throw new Error('Unsupported case');
     }
@@ -1246,18 +1289,21 @@ M Q R R P E U L W O Z Y E Y C A R U D E G T F T P J N E W B T Q R M W C K B T D 
     };
 }
 
-const VERBOSE = false;
-const {board, words} = createWordSearchTestCase(4);
+const VERBOSE = true;
+const BOARD_DISPLAY_THRESHOLD = 20;
+const WORDS_DISPLAY_THRESHOLD = 300;
+
+const {board, words} = createWordSearchTestCase(5);
 const rowCount = board.length;
 const columnCount = board[0].length;
 
 console.log(`Board size: ${board.length}x${board[0].length}`);
-if (rowCount < 20 && columnCount < 20) {
+if (rowCount <= BOARD_DISPLAY_THRESHOLD && columnCount <= BOARD_DISPLAY_THRESHOLD) {
     displayBoard(board);
 }
 
 console.log(`Word count: ${words.size}`);
-if (words.size < 300) {
+if (words.size <= WORDS_DISPLAY_THRESHOLD) {
     showWordsInChunk(words, 10);
 }
 
