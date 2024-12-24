@@ -112,10 +112,12 @@ interface WordGameSolver {
 }
 
 abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
+    private static readonly CONCURRENT_LIMIT = 1 << 16;
+    
     protected readonly board: TextBoard;
     protected readonly wordSplitter: WordSplitter;
 
-    public constructor(board: TextBoard, wordSplitter: WordSplitter, protected readonly concurrentLimit: number = 1 << 16) {
+    public constructor(board: TextBoard, wordSplitter: WordSplitter) {
         if (board.length === 0) {
             throw new Error('Board must not be empty');
         }
@@ -152,7 +154,7 @@ abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
 
         const state = this.createFindingState(trie, found);
         const tasks = this.findFromCellTasks(state);
-        await promisify(tasks, { limit: this.concurrentLimit });
+        await promisify(tasks, { limit: TrieWordGameSolver.CONCURRENT_LIMIT });
 
         return this.foundWordsToFindResult(found, wordOrWords);
     }
