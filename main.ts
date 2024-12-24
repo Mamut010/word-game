@@ -374,9 +374,10 @@ async function runMethod<T extends ReadonlyMap<string, CellSequence[]>>(fn: () =
 }
 
 function displayExecutionResult(execution: ExecutionResult<ReadonlyMap<string, CellSequence[]>>) {
+    const decimalDigitCount = 2;
     const {result, duration} = execution;
     displayFoundResult(result);
-    console.log(`Duration: ${duration}ms`);
+    console.log(`Duration: ${roundDecimal(duration, decimalDigitCount)}ms`);
 }
 
 function displayFoundResult(found: ReadonlyMap<string, CellSequence[]>) {
@@ -386,7 +387,7 @@ function displayFoundResult(found: ReadonlyMap<string, CellSequence[]>) {
     }
 
     const words = [...found.keys()];
-    console.log(`Found ${words.length} word(s):${VERBOSE ? ' ' + words.join(', ') : ''}`);
+    console.log(`Found ${words.length} word(s)${VERBOSE ? ': ' + words.join(', ') : ''}`);
 
     if (!VERBOSE) {
         return;
@@ -457,6 +458,11 @@ function displayBoard(board: TextBoard) {
 
 function numberOfDigits(num: number): number {
     return num.toString().length;
+}
+
+function roundDecimal(num: number, digit: number = 0): number {
+    digit = Math.max(digit, 0);
+    return +num.toFixed(digit);
 }
 
 function padMiddle(str: string, length: number, fillString: string = ' ') {
@@ -2076,6 +2082,7 @@ const {board, words} = createWordSearchTestCase(6);
 const rowCount = board.length;
 const columnCount = board[0].length;
 
+console.log('INPUT')
 console.log(`Board size: ${board.length}x${board[0].length}`);
 if (rowCount <= BOARD_DISPLAY_THRESHOLD && columnCount <= BOARD_DISPLAY_THRESHOLD) {
     displayBoard(board);
@@ -2085,6 +2092,8 @@ console.log(`Word count: ${words.size}`);
 if (words.size <= WORDS_DISPLAY_THRESHOLD) {
     showWordsInChunk(words, 10);
 }
+
+console.log('*****************************');
 
 const solver = WordGameSolvers.wordSearch(board);
 initCells(rowCount, columnCount); // Eagerly init all cells to make it fair for all benchmark runs
