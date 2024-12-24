@@ -165,7 +165,7 @@ abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
         return row >= 0 && column >= 0 && row < this.board.length && column < this.board[row].length;
     }
 
-    protected *boardIter(): Iterable<[number,number]> {
+    protected *boardIter(): Iterable<[number, number]> {
         for (let i = 0; i < this.board.length; i++) {
             for (let j = 0; j < this.board[i].length; j++) {
                 yield [i, j];
@@ -173,7 +173,7 @@ abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
         }
     }
 
-    protected *adjacentPositions(): Iterable<[number,number]> {
+    protected *adjacentPositions(): Iterable<[number, number]> {
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
                 if (dx !== 0 && dy !== 0) {
@@ -200,13 +200,8 @@ abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
         }
 
         wordOrWords = typeof wordOrWords === 'string' ? [wordOrWords] : wordOrWords;
-        const lengthLimit = this.board.length * this.board[0].length;
 
         for (const word of wordOrWords) {
-            if (word.length > lengthLimit || word.length === 0) {
-                continue;
-            }
-
             let current = root;
             for (const value of this.wordSplitter(word)) {
                 current = current.addChild(value);
@@ -243,7 +238,10 @@ class TrieBoggleSolver extends TrieWordGameSolver<BoggleFindingState> {
     }
 
     protected createFindingState(trie: TrieData, found: Map<string, CellSequence[]>): BoggleFindingState {
-        const visited = Array.from({ length: this.board.length }, (_, i) => Array(this.board[i].length).fill(false));
+        const visited = Array.from(
+            { length: this.board.length },
+            (_, i) => Array(this.board[i].length).fill(false)
+        );
         return {...trie, found, visited};
     }
 
