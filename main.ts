@@ -174,9 +174,9 @@ abstract class TrieWordGameSolver<TFindingState> implements WordGameSolver {
     }
 
     protected *adjacentPositions(): Iterable<[number,number]> {
-        for (const dx of [-1, 0, 1]) {
-            for (const dy of [-1, 0, 1]) {
-                if (dx !== 0 || dy !== 0) {
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                if (dx !== 0 && dy !== 0) {
                     yield [dx, dy];
                 }
             }
