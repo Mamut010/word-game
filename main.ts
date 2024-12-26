@@ -67,7 +67,7 @@ async function promisify<T>(tasks: Iterable<() => T | PromiseLike<T>>, options?:
     return mapToArray(results);
 }
 
-function mapToArray<T>(map: Map<number, T>): T[] {
+function mapToArray<T>(map: ReadonlyMap<number, T>): T[] {
     const result: T[] = [];
     map.forEach((value, key) => {
         result[key] = value;
